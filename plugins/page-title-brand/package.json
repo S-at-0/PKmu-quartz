@@ -1,0 +1,28 @@
+{
+  "name": "page-title-brand",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./components": "./components.js"
+  },
+  "quartz": {
+    "name": "page-title-brand",
+    "displayName": "Branded Page Title",
+    "description": "Displays the restored icon and multi-line site title.",
+    "version": "1.0.0",
+    "category": [
+      "component"
+    ],
+    "components": {
+      "BrandedPageTitle": {
+        "name": "BrandedPageTitle",
+        "displayName": "Branded page title",
+        "description": "Links to the site root using the restored icon and title treatment.",
+        "version": "1.0.0",
+        "defaultPosition": "left",
+        "defaultPriority": 10
+      }
+    }
+  }
+}

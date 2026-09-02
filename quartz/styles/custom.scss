@@ -1,3 +1,160 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+body {
+  &::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    // The compiled stylesheet lives at the site root, so this also works
+    // when Quartz is deployed below /~s_at_0/PKμ/.
+    background-image: url("static/background.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: -1;
+    pointer-events: none;
+  }
+}
+
+body,
+.article {
+  font-family: "Klee One", serif !important;
+}
+
+.article-title {
+  font-family: "STIX Two Text", "Noto Serif JP", serif;
+}
+
+.page-title {
+  margin-bottom: 2rem;
+
+  .title-container:hover {
+    opacity: 0.8;
+  }
+
+  @media all and (max-width: 600px) {
+    margin-bottom: 1rem;
+    .title-line {
+      font-size: 1rem;
+    }
+    .page-title-icon {
+      height: 3rem;
+    }
+  }
+}
+
+@media all and (max-width: 600px) {
+  .sidebar.left {
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+
+    .page-title {
+      order: 1;
+      margin-right: auto;
+      width: auto;
+      margin-bottom: 0 !important;
+    }
+    .explorer {
+      order: 2;
+      margin: 0 0 0 auto !important;
+      width: auto !important;
+      padding-right: 1rem;
+      display: flex;
+      align-items: center;
+
+      .explorer-toggle.mobile-explorer {
+        background: none;
+        border: none;
+        padding: 0;
+        margin-left: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        svg {
+          width: 3.2rem !important;
+          height: 3.2rem !important;
+          stroke: var(--dark);
+          stroke-width: 2.5px;
+        }
+      }
+    }
+    .spacer {
+      display: none;
+    }
+    .flex-component {
+      order: 3;
+      width: 100%;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+
+      & > div:has(.search) {
+        width: 100%;
+        flex-grow: 1;
+        margin-bottom: 0.5rem;
+      }
+      & > div:not(:has(.search)) {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+.sidebar {
+  background-color: color-mix(in srgb, var(--light), transparent 20%);
+}
+.darkmode {
+  display: none !important;
+}
+
+[data-embed="true"] {
+  &,
+  body {
+    background: transparent !important;
+    background-image: none !important;
+  }
+  .sidebar,
+  header,
+  footer,
+  .page-header,
+  .backlinks,
+  .graph,
+  .toc {
+    display: none !important;
+  }
+  .page,
+  .center {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .page {
+    padding: 0 !important;
+  }
+  .center {
+    padding: 1rem !important;
+  }
+  .article {
+    margin: 0 !important;
+  }
+}
+
+// Canvas 画面全体の背景を透明化
+.canvas-container,
+.canvas-wrapper,
+.canvas-viewport {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+// ドットやグリッドの背景パターンも非表示にしたい場合（必要に応じて）
+.canvas-background-grid {
+  opacity: 0;
+}

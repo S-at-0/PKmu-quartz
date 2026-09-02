@@ -1,0 +1,18 @@
+{
+  "name": "japanese-frontmatter",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.js"
+  },
+  "quartz": {
+    "name": "japanese-frontmatter",
+    "displayName": "Japanese Frontmatter",
+    "description": "Restores the v4 Japanese aliases for title and dates.",
+    "version": "1.0.0",
+    "category": [
+      "transformer"
+    ],
+    "defaultOrder": 6
+  }
+}

@@ -201,7 +201,9 @@ export function renderTranscludes(
               type: "element",
               tagName: "a",
               properties: {
-                href: inner.properties?.href,
+                href: typeof inner.properties?.href === "string" && inner.properties.href.endsWith(".canvas")
+                  ? inner.properties.href.slice(0, -7)
+                  : inner.properties?.href,
                 class: ["internal", "internal-link", "transclude-src"],
               },
               children: [
@@ -244,7 +246,9 @@ export function renderTranscludes(
             type: "element",
             tagName: "a",
             properties: {
-              href: inner.properties?.href,
+              href: typeof inner.properties?.href === "string" && inner.properties.href.endsWith(".canvas")
+                ? inner.properties.href.slice(0, -7)
+                : inner.properties?.href,
               class: ["internal", "internal-link", "transclude-src"],
             },
             children: [
@@ -277,7 +281,9 @@ export function renderTranscludes(
             type: "element",
             tagName: "a",
             properties: {
-              href: inner.properties?.href,
+              href: typeof inner.properties?.href === "string" && inner.properties.href.endsWith(".canvas")
+                ? inner.properties.href.slice(0, -7)
+                : inner.properties?.href,
               class: ["internal", "internal-link", "transclude-src"],
             },
             children: [

@@ -10,5 +10,6 @@ private/
 .replit
 replit.nix
 .quartz/
+old_Project/
 quartz/cli/tui/dist/
 .turbo/

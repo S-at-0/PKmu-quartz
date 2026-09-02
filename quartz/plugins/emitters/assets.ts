@@ -12,12 +12,15 @@ function getPageTypeExtensions(ctx: BuildCtx): Set<string> {
   for (const pt of pageTypes) {
     if (pt.fileExtensions) {
       for (const ext of pt.fileExtensions) {
-        extensions.add(ext)
+        if (ext !== ".canvas") {
+          extensions.add(ext)
+        }
       }
     }
   }
   return extensions
 }
+
 
 const filesToCopy = async (argv: Argv, cfg: QuartzConfig, excludeExtensions: Set<string>) => {
   const excludePatterns = ["**/*.md", ...cfg.configuration.ignorePatterns]
