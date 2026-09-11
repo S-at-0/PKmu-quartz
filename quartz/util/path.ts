@@ -170,6 +170,14 @@ export function pathToRoot(slug: FullSlug): RelativeURL {
 
 export function resolveRelative(current: FullSlug, target: FullSlug | SimpleSlug): RelativeURL {
   const res = joinSegments(pathToRoot(current), simplifySlug(target as FullSlug)) as RelativeURL
+
+  // 拡張子なしアクセスを修正するため、フォルダでないかつ拡張子がないパスに .html を付与
+  if (res.length > 0 && !res.endsWith("/") && !res.includes("#") && !res.includes("?")) {
+    const base = res.split("/").pop()!
+    if (base !== "." && base !== ".." && !base.includes(".")) {
+      return (res + ".html") as RelativeURL
+    }
+  }
   return res
 }
 
