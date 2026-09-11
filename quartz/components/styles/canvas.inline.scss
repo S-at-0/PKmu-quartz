@@ -1,0 +1,130 @@
+.canvas-embed {
+  width: 100%;
+  height: 600px;
+  border: 1px solid var(--lightgray);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  background-color: transparent;
+  margin: 1rem 0;
+
+  .canvas-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-family: var(--bodyFont);
+  }
+
+  .canvas-viewport {
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: visible;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .canvas-content {
+    position: absolute;
+    transform-origin: 0 0;
+    will-change: transform;
+  }
+
+  .canvas-node {
+    position: absolute;
+    border-radius: 6px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: var(--light);
+    border: 1px solid var(--gray);
+    overflow: auto;
+    font-size: 0.9em;
+    color: var(--dark);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    box-sizing: border-box;
+    backdrop-filter: blur(4px);
+
+    .text-content {
+      width: 100%;
+      line-height: 1.4;
+      overflow-wrap: break-word;
+    }
+
+    &.node-image, &.node-markdown {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    &.node-group {
+      background: rgba(var(--secondary-rgb), 0.05);
+      border: 2px dashed var(--secondary);
+      pointer-events: none;
+      z-index: 0;
+      
+      .node-label {
+        position: absolute;
+        top: -25px;
+        left: 0;
+        font-weight: bold;
+        color: var(--secondary);
+      }
+    }
+  }
+
+  .canvas-edges {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2; // Moved to top
+
+    path {
+      fill: none;
+      stroke: var(--gray);
+      stroke-width: 2;
+      opacity: 0.8;
+    }
+  }
+
+  .canvas-controls {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+
+    button {
+      background: var(--light);
+      border: 1px solid var(--lightgray);
+      border-radius: 4px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background: var(--secondary);
+        color: var(--light);
+        border-color: var(--secondary);
+      }
+    }
+  }
+}

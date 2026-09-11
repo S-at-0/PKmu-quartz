@@ -2,8 +2,9 @@ import { Root } from "hast"
 import { GlobalConfiguration } from "../../cfg"
 import { getDate } from "../../components/Date"
 import { escapeHTML } from "../../util/escape"
-import { FilePath, FullSlug, SimpleSlug, joinSegments, simplifySlug } from "../../util/path"
+import { FilePath, FullSlug, SimpleSlug, joinSegments, simplifySlug, slugifyFilePath } from "../../util/path"
 import { QuartzEmitterPlugin } from "../types"
+import path from "path"
 import { toHtml } from "hast-util-to-html"
 import { write } from "./helpers"
 import { i18n } from "../../i18n"
@@ -115,6 +116,22 @@ export const ContentIndex: QuartzEmitterPlugin<Partial<Options>> = (opts) => {
               : undefined,
             date: date,
             description: file.data.description ?? "",
+          })
+        }
+      }
+
+      for (const fp of ctx.allFiles) {
+        if (fp.endsWith(".canvas")) {
+          const slug = slugifyFilePath(fp, true)
+          if (linkIndex.has(slug)) continue
+          linkIndex.set(slug, {
+            slug,
+            filePath: fp,
+            title: path.basename(fp, ".canvas"),
+            links: [],
+            tags: [],
+            content: "",
+            date: new Date(),
           })
         }
       }
