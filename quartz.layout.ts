@@ -5,13 +5,30 @@ import * as Component from "./quartz/components"
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
   header: [],
-  afterBody: [],
+  afterBody: [
+    Component.Comments({
+      provider: "giscus",
+      options: {
+        repo: "S-at-0/PKmu-quartz",
+        repoId: "R_kgDOULnYeg",
+        category: "Announcements",
+        categoryId: "DIC_kwDOULnYes4DEtBF",
+        themeUrl: "https://giscus.app/themes",
+        darkTheme:  "transparent_dark",
+        lightTheme: "transparent_dark",
+        mapping: "title",
+        strict: false,
+        lang: "ja",
+      }
+    }),
+  ],
   footer: Component.Footer({
     links: {
       GitHub: "https://github.com/jackyzha0/quartz",
       "Discord Community": "https://discord.gg/cRFFHYye7t",
     },
   }),
+
 }
 
 // components for pages that display a single page (e.g. a single note)
@@ -36,9 +53,11 @@ export const defaultContentPageLayout: PageLayout = {
         },
         { Component: Component.Darkmode() },
         { Component: Component.ReaderMode() },
+        { Component: Component.DownloadButton() },
       ],
     }),
     Component.Explorer(),
+    Component.TableOfContents(),
   ],
   right: [
     Component.Graph(),

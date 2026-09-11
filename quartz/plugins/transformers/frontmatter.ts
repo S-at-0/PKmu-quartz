@@ -71,8 +71,11 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
               },
             })
 
-            if (data.title != null && data.title.toString() !== "") {
-              data.title = data.title.toString()
+            // --- ここから修正ブロック ---      
+            // 1. title -> 通り名
+            const title = coalesceAliases(data, ["通り名", "title"])
+            if (title != null && title.toString() !== "") {
+              data.title = title.toString()
             } else {
               data.title = file.stem ?? i18n(cfg.configuration.locale).propertyDefaults.title
             }
@@ -82,7 +85,7 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
 
             const aliases = coerceToArray(coalesceAliases(data, ["aliases", "alias"]))
             if (aliases) {
-              data.aliases = aliases // frontmatter
+              data.aliases = aliases
               file.data.aliases = getAliasSlugs(aliases)
               allSlugs.push(...file.data.aliases)
             }
@@ -100,19 +103,23 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
 
             const socialImage = coalesceAliases(data, ["socialImage", "image", "cover"])
 
-            const created = coalesceAliases(data, ["created", "date"])
+            // 2. created -> 日付
+            const created = coalesceAliases(data, ["日付", "created", "date"])
             if (created) {
               data.created = created
             }
 
+            // 3. modified -> とき
             const modified = coalesceAliases(data, [
+              "とき",
               "modified",
               "lastmod",
               "updated",
               "last-modified",
             ])
             if (modified) data.modified = modified
-            data.modified ||= created // if modified is not set, use created
+            data.modified ||= created // modifiedがない場合はcreated(日付)を使う
+            // --- ここまで修正ブロック ---
 
             const published = coalesceAliases(data, ["published", "publishDate", "date"])
             if (published) data.published = published
