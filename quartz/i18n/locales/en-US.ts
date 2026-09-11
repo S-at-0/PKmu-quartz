@@ -59,6 +59,11 @@ export default {
     contentMeta: {
       readingTime: ({ minutes }) => `${minutes} min read`,
     },
+    downloadButton: {
+      title: "Download Page",
+      markdown: "Download Markdown",
+      pdf: "Download PDF",
+    },
   },
   pages: {
     rss: {

@@ -59,6 +59,11 @@ export default {
     contentMeta: {
       readingTime: ({ minutes }) => `${minutes} min read`,
     },
+    downloadButton: {
+      title: "ページをダウンロード",
+      markdown: "Markdown をダウンロード",
+      pdf: "PDF をダウンロード",
+    },
   },
   pages: {
     rss: {

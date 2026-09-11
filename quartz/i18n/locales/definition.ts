@@ -62,6 +62,11 @@ export interface Translation {
     contentMeta: {
       readingTime: (variables: { minutes: number }) => string
     }
+    downloadButton: {
+      title: string
+      markdown: string
+      pdf: string
+    }
   }
   pages: {
     rss: {
