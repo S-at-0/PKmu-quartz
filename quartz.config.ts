@@ -16,7 +16,7 @@ const config: QuartzConfig = {
       provider: "plausible",
     },
     locale: "ja-JP",
-    baseUrl: "www.warabi.ne.jp/~s_at_0/PKμ",
+    baseUrl: "www.warabi.ne.jp/~s_at_0/PKmu",
     ignorePatterns: ["_/**", "SrcBarn", "_事地/文殿", "_事地/手形/_券契", ".obsidian", ".git*"],
     defaultDateType: "modified",
     theme: {
