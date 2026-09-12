@@ -72,6 +72,10 @@ const config: QuartzConfig = {
       Plugin.GitHubFlavoredMarkdown(),
       Plugin.TableOfContents(),
       Plugin.CrawlLinks({ markdownLinkResolution: "shortest", prettyLinks: false }),
+      Plugin.RemoteImages({
+        baseUrl: "https://sato.tail82e0be.ts.net",
+        bucket: "public",
+      }),
       Plugin.Description(),
       Plugin.Latex({ renderEngine: "katex" }),
     ],
@@ -86,7 +90,14 @@ const config: QuartzConfig = {
         enableSiteMap: true,
         enableRSS: false,
       }),
-      Plugin.Assets(),
+      Plugin.Assets({
+        filter: (fp) => {
+          const clean = fp.split("?")[0].split("#")[0]
+          const ext = clean.split(".").pop()?.toLowerCase() || ""
+          const nonAssetExts = ["canvas", "css", "js", "json", "md", "ts", "html", "scss", "txt", "xml"]
+          return ext === "" || nonAssetExts.includes(ext)
+        },
+      }),
       Plugin.Static(),
       Plugin.Favicon(),
       Plugin.NotFoundPage(),

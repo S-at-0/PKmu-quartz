@@ -12,3 +12,5 @@ export { TableOfContents } from "./toc"
 export { HardLineBreaks } from "./linebreaks"
 export { RoamFlavoredMarkdown } from "./roam"
 export { Canvas } from "./canvas"
+export { RemoteImages } from "./remoteImages"
+

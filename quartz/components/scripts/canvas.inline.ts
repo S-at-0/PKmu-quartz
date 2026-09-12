@@ -3,7 +3,7 @@ import { removeAllChildren } from "./util"
 interface CanvasNode {
   id: string; x: number; y: number; width: number; height: number;
   type: "text" | "file" | "link" | "group"
-  text?: string; file?: string; link?: string; label?: string; color?: string
+  text?: string; file?: string; link?: string; url?: string; label?: string; color?: string
 }
 
 interface CanvasEdge {
@@ -53,6 +53,18 @@ class CanvasRenderer {
 
   private resolveUrl(filePath: string | undefined): string {
     if (!filePath) return ""
+    const cleanPath = filePath.split("?")[0].split("#")[0]
+    const ext = cleanPath.split(".").pop()?.toLowerCase() || ""
+    const nonAssetExts = ["canvas", "css", "js", "json", "md", "ts", "html", "scss", "txt", "xml"]
+
+    if (ext !== "" && !nonAssetExts.includes(ext)) {
+      if (/^(https?:)?\/\//.test(filePath)) {
+        return filePath
+      }
+      const rawPath = filePath.replace(/\\/g, "/").replace(/^(public\/)+/, "").replace(/^\//, "")
+      return `https://sato.tail82e0be.ts.net/public/${rawPath}`
+    }
+
     const target = filePath.replace(/\\/g, "/").replace(/^(public\/)+/, "").replace(/^\//, "")
     for (const [slug, data] of Object.entries(this.index) as [string, any][]) {
       const path = data.filePath.replace(/\\/g, "/").replace(/^(public\/)+/, "").replace(/^\//, "")
@@ -143,7 +155,8 @@ class CanvasRenderer {
         const ext = node.file?.split(".").pop()?.toLowerCase() || ""; const isImg = ["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext)
         const fileUrl = this.resolveUrl(node.file)
         if (isImg) {
-          const imgPath = this.rootPath + (node.file || "").replace(/\\/g, "/").replace(/^(public\/)+/, "").replace(/^\//, "")
+          const rawFile = (node.file || "").replace(/\\/g, "/").replace(/^(public\/)+/, "").replace(/^\//, "")
+          const imgPath = /^(https?:)?\/\//.test(rawFile) ? rawFile : this.rootPath + rawFile
           el.innerHTML = `<img src="${imgPath}" style="width:100%;height:100%;object-fit:contain;display:block;cursor:pointer;">`
           el.onclick = () => { if (fileUrl) window.location.href = fileUrl }
         } else {
@@ -158,7 +171,50 @@ class CanvasRenderer {
           }
         }
       } else if (node.type === "group") { el.innerHTML = `<div class="node-label">${node.label || ""}</div>` }
-      else if (node.type === "link") { el.innerHTML = `<a href="${node.link}" target="_blank">${node.link}</a>` }
+      else if (node.type === "link") {
+        const linkUrl = node.url || node.link || ""
+        if (linkUrl) {
+          let host = ""
+          try {
+            host = new URL(linkUrl).hostname
+          } catch (e) {
+            host = linkUrl
+          }
+          const cleanUrl = linkUrl.split("?")[0].split("#")[0].toLowerCase()
+          const isDirectImg = ["png", "jpg", "jpeg", "gif", "webp", "svg"].some(ext => cleanUrl.endsWith("." + ext))
+
+          const bodyContent = isDirectImg
+            ? `<img src="${linkUrl}" style="width:100%;height:100%;object-fit:contain;display:block;">`
+            : `<iframe src="${linkUrl}" style="width:100%;height:100%;border:none;background:white;" loading="lazy"></iframe>`
+
+          el.innerHTML = `
+            <div class="canvas-link-card" style="width:100%;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--light);">
+              <div class="canvas-link-header" style="height:32px;min-height:32px;background:var(--lightgray);display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:12px;z-index:2;border-bottom:1px solid var(--gray);box-sizing:border-box;">
+                <span class="canvas-link-host" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dark);font-weight:500;display:flex;align-items:center;gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                  ${host}
+                </span>
+                <a href="${linkUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--secondary);display:flex;align-items:center;text-decoration:none;" title="Open link">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                </a>
+              </div>
+              <div class="canvas-link-body" style="flex:1;position:relative;width:100%;height:calc(100% - 32px);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                ${bodyContent}
+                <div class="canvas-link-overlay" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;cursor:pointer;"></div>
+              </div>
+            </div>
+          `
+          const overlay = el.querySelector(".canvas-link-overlay") as HTMLElement
+          if (overlay) {
+            overlay.onclick = (e) => {
+              e.stopPropagation()
+              window.open(linkUrl, "_blank", "noopener,noreferrer")
+            }
+          }
+        } else {
+          el.innerHTML = `<div class="canvas-error" style="padding: 8px;">No URL specified</div>`
+        }
+      }
       this.content.appendChild(el)
     }
   }
