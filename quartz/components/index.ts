@@ -24,6 +24,7 @@ import Comments from "./Comments"
 import Flex from "./Flex"
 import ConditionalRender from "./ConditionalRender"
 import DownloadButton from "./DownloadButton"
+import KataList from "./KataList"
 
 export {
   ArticleTitle,
@@ -39,6 +40,7 @@ export {
   TableOfContents,
   Explorer,
   TagList,
+  KataList,
   Graph,
   Backlinks,
   Search,

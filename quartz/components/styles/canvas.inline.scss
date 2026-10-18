@@ -40,7 +40,7 @@
     position: absolute;
     border-radius: 6px;
     padding: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background: var(--light);
     border: 1px solid var(--gray);
     overflow: hidden;
@@ -68,6 +68,78 @@
       line-height: 1.4;
       overflow-wrap: break-word;
       overflow: auto;
+      text-align: left;
+      box-sizing: border-box;
+      padding: 4px;
+
+      > *:first-child {
+        margin-top: 0;
+      }
+      > *:last-child {
+        margin-bottom: 0;
+      }
+
+      .text-highlight, mark {
+        background-color: var(--highlight, #fff2a8);
+        color: var(--dark);
+        padding: 0.1em 0.25em;
+        border-radius: 3px;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        margin-top: 0.5em;
+        margin-bottom: 0.3em;
+        line-height: 1.2;
+        font-weight: 600;
+      }
+      h1 { font-size: 1.35em; }
+      h2 { font-size: 1.2em; }
+      h3 { font-size: 1.1em; }
+      h4, h5, h6 { font-size: 1.0em; }
+
+      p {
+        margin-top: 0.3em;
+        margin-bottom: 0.3em;
+      }
+
+      ul, ol {
+        padding-left: 1.2em;
+        margin-top: 0.3em;
+        margin-bottom: 0.3em;
+      }
+
+      code {
+        background-color: var(--lightgray);
+        padding: 0.15em 0.3em;
+        border-radius: 3px;
+        font-size: 0.85em;
+      }
+
+      pre {
+        background-color: var(--lightgray);
+        padding: 0.5em;
+        border-radius: 4px;
+        overflow-x: auto;
+        code {
+          background-color: transparent;
+          padding: 0;
+        }
+      }
+
+      blockquote {
+        margin: 0.5em 0;
+        padding-left: 0.8em;
+        border-left: 3px solid var(--secondary);
+        color: var(--gray);
+      }
+
+      a {
+        color: var(--secondary);
+        text-decoration: none;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
 
       img {
         max-width: 100%;
@@ -76,7 +148,10 @@
       }
     }
 
-    &.node-image, &.node-markdown, &.node-file, &.node-link {
+    &.node-image,
+    &.node-markdown,
+    &.node-file,
+    &.node-link {
       padding: 0;
       overflow: hidden;
     }
@@ -86,7 +161,7 @@
       border: 2px dashed var(--secondary);
       pointer-events: none;
       z-index: 0;
-      
+
       .node-label {
         position: absolute;
         top: -25px;
@@ -134,7 +209,7 @@
       align-items: center;
       gap: 4px;
       transition: all 0.2s ease;
-      
+
       &:hover {
         background: var(--secondary);
         color: var(--light);

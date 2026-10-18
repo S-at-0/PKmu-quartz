@@ -119,6 +119,10 @@ export const FrontMatter: QuartzTransformerPlugin<Partial<Options>> = (userOpts)
             ])
             if (modified) data.modified = modified
             data.modified ||= created // modifiedがない場合はcreated(日付)を使う
+
+            // 4. カタ
+            const kata = coerceToArray(coalesceAliases(data, ["カタ", "kata"]))
+            if (kata) data.kata = kata
             // --- ここまで修正ブロック ---
 
             const published = coalesceAliases(data, ["published", "publishDate", "date"])
@@ -147,6 +151,7 @@ declare module "vfile" {
     } & Partial<{
         tags: string[]
         aliases: string[]
+        kata: string[]
         modified: string
         created: string
         published: string

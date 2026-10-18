@@ -3,7 +3,7 @@ import { removeAllChildren } from "./util"
 interface CanvasNode {
   id: string; x: number; y: number; width: number; height: number;
   type: "text" | "file" | "link" | "group"
-  text?: string; file?: string; link?: string; url?: string; label?: string; color?: string
+  text?: string; textHtml?: string; file?: string; link?: string; url?: string; label?: string; color?: string
 }
 
 interface CanvasEdge {
@@ -46,7 +46,7 @@ class CanvasRenderer {
         fetch(this.rootPath + "static/contentIndex.json").catch(() => fetch(this.rootPath + "index.json"))
       ])
       this.data = await canvasResp.json()
-      try { this.index = await indexResp.json() } catch (e) {}
+      try { this.index = await indexResp.json() } catch (e) { }
       this.render(); this.autoFit()
     } catch (e) { this.container.innerHTML = `<div class="canvas-error">Failed to load: ${e}</div>` }
   }
@@ -129,18 +129,18 @@ class CanvasRenderer {
       if (edge.fromSide === "left") cp1.x -= off; else if (edge.fromSide === "right") cp1.x += off; else if (edge.fromSide === "top") cp1.y -= off; else if (edge.fromSide === "bottom") cp1.y += off; else cp1.x += off
       if (edge.toSide === "left") cp2.x -= off; else if (edge.toSide === "right") cp2.x += off; else if (edge.toSide === "top") cp2.y -= off; else if (edge.toSide === "bottom") cp2.y += off; else cp2.x -= off
       path.setAttribute("d", `M ${start.x} ${start.y} C ${cp1.x} ${cp1.y}, ${cp2.x} ${cp2.y}, ${end.x} ${end.y}`); path.setAttribute("fill", "none"); path.style.strokeWidth = "2"
-      
+
       const drawStart = edge.fromEnd === "arrow"; const drawEnd = edge.toEnd !== "none"
       const col = this.getColor(edge.color)
       let markerUrl = `url(#arrowhead-${canvasId})`
-      
+
       if (col) {
         path.style.stroke = col; const m = marker.cloneNode(true) as SVGMarkerElement; const id = `m-${edge.id}-${canvasId}`; m.id = id; m.querySelector("polygon")?.setAttribute("fill", col); defs.appendChild(m); markerUrl = `url(#${id})`
       } else { path.style.stroke = "#999" }
-      
+
       if (drawStart) path.setAttribute("marker-start", markerUrl)
       if (drawEnd) path.setAttribute("marker-end", markerUrl)
-      
+
       svg.appendChild(path)
       if (edge.label) {
         const t = document.createElementNS("http://www.w3.org/2000/svg", "text"); t.setAttribute("x", ((start.x + end.x) / 2).toString()); t.setAttribute("y", ((start.y + end.y) / 2 - 8).toString()); t.setAttribute("text-anchor", "middle"); t.style.fontSize = "12px"; t.style.fill = col || "#999"; t.style.paintOrder = "stroke"; t.style.stroke = "var(--light)"; t.style.strokeWidth = "3px"; t.textContent = edge.label; svg.appendChild(t)
@@ -150,7 +150,10 @@ class CanvasRenderer {
     for (const node of this.data.nodes) {
       const el = document.createElement("div"); el.className = `canvas-node node-${node.type}`; el.style.left = `${node.x}px`; el.style.top = `${node.y}px`; el.style.width = `${node.width}px`; el.style.height = `${node.height}px`
       const col = this.getColor(node.color); if (col) { el.style.borderColor = col; el.style.backgroundColor = `${col}15` } else { el.style.backgroundColor = "rgba(var(--light-rgb), 0.7)" }
-      if (node.type === "text") { el.innerHTML = `<div class="text-content">${(node.text || "").replace(/\n/g, "<br>")}</div>` }
+      if (node.type === "text") {
+        const content = node.textHtml || (node.text || "").replace(/\n/g, "<br>")
+        el.innerHTML = `<div class="text-content markdown-section">${content}</div>`
+      }
       else if (node.type === "file") {
         const ext = node.file?.split(".").pop()?.toLowerCase() || ""; const isImg = ["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext)
         const fileUrl = this.resolveUrl(node.file)

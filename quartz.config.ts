@@ -17,7 +17,7 @@ const config: QuartzConfig = {
     },
     locale: "ja-JP",
     baseUrl: "www.warabi.ne.jp/~s_at_0/PKmu",
-    ignorePatterns: ["_/**", "SrcBarn", "_事地/文殿", "_事地/手形/_券契", ".obsidian", ".git*"],
+    ignorePatterns: ["_/**", "SrcBarn", "_事地/手形/_券契","_事地/手形/_CIDOC-CRM", ".obsidian", ".git*"],
     defaultDateType: "modified",
     theme: {
       fontOrigin: "googleFonts",
