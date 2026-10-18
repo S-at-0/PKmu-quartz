@@ -9,3 +9,7 @@
 <FilesMatch "\.(md|txt)$">
     Header set Content-Type "text/plain; charset=utf-8"
 </FilesMatch>
+<FilesMatch "\.(canvas|json)$">
+    Header set Content-Type "application/json; charset=utf-8"
+</FilesMatch>
+AddType application/json .canvas

@@ -21,7 +21,7 @@ class CanvasRenderer {
   private data: CanvasData | null = null; private index: any = {}; private currentSlug: string; private rootPath: string
 
   constructor(private container: HTMLElement, private src: string) {
-    this.currentSlug = container.getAttribute("data-slug") || ""
+    this.currentSlug = container.getAttribute("data-slug") || document.body.dataset.slug || ""
     this.rootPath = this.pathToRoot(this.currentSlug)
     this.viewport = document.createElement("div"); this.viewport.className = "canvas-viewport"
     this.content = document.createElement("div"); this.content.className = "canvas-content"
@@ -30,7 +30,7 @@ class CanvasRenderer {
   }
 
   private pathToRoot(slug: string): string {
-    const parts = slug.split("/"); if (parts.length <= 1) return ""; return "../".repeat(parts.length - 1)
+    const parts = slug.split("/").filter(Boolean); if (parts.length <= 1) return ""; return "../".repeat(parts.length - 1)
   }
 
   private getColor(color: string | undefined): string | undefined {
@@ -41,10 +41,15 @@ class CanvasRenderer {
 
   private async load() {
     try {
+      const cleanSrc = this.src.trim()
+      const targetSrc = encodeURI(decodeURI(cleanSrc))
       const [canvasResp, indexResp] = await Promise.all([
-        fetch(this.src),
+        fetch(targetSrc),
         fetch(this.rootPath + "static/contentIndex.json").catch(() => fetch(this.rootPath + "index.json"))
       ])
+      if (!canvasResp.ok) {
+        throw new Error(`HTTP ${canvasResp.status} ${canvasResp.statusText} (${this.src})`)
+      }
       this.data = await canvasResp.json()
       try { this.index = await indexResp.json() } catch (e) { }
       this.render(); this.autoFit()
@@ -230,6 +235,21 @@ class CanvasRenderer {
   }
 }
 
-document.addEventListener("nav", () => {
-  const embeds = document.querySelectorAll(".canvas-embed"); embeds.forEach((el) => { const s = el.getAttribute("data-src"); if (s) new CanvasRenderer(el as HTMLElement, s) })
-})
+function initCanvas() {
+  const embeds = document.querySelectorAll(".canvas-embed")
+  embeds.forEach((el) => {
+    if (el.querySelector(".canvas-viewport")) return
+    const s = el.getAttribute("data-src")
+    if (s) {
+      new CanvasRenderer(el as HTMLElement, s)
+    }
+  })
+}
+
+document.addEventListener("nav", initCanvas)
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initCanvas)
+} else {
+  initCanvas()
+}
+

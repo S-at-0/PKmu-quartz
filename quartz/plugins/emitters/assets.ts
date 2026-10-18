@@ -24,9 +24,26 @@ const convertPathToS3Url = (canvasFp: string, targetPath: string): string => {
   if (isAbsoluteUrl(targetPath, { httpOnly: false })) return targetPath
   if (!isTargetAsset(targetPath)) return targetPath
 
+  const rawTarget = targetPath.split("?")[0].split("#")[0].replace(/\\/g, "/")
   const canvasDir = path.posix.dirname(canvasFp)
-  const rawResolved = path.posix.resolve("/", canvasDir, targetPath.split("?")[0].split("#")[0])
-  const cleanPath = rawResolved.replace(/^\//, "").replace(/^(public\/)+/, "")
+
+  let cleanPath: string
+  if (rawTarget.startsWith("./") || rawTarget.startsWith("../")) {
+    cleanPath = path.posix.resolve("/", canvasDir, rawTarget).replace(/^\//, "")
+  } else if (canvasDir === "." || canvasDir === "" || rawTarget.startsWith(canvasDir + "/")) {
+    cleanPath = rawTarget.replace(/^\//, "")
+  } else {
+    cleanPath = path.posix.resolve("/", canvasDir, rawTarget).replace(/^\//, "")
+  }
+
+  if (canvasDir !== "." && canvasDir !== "") {
+    const dupPrefix = `${canvasDir}/${canvasDir}/`
+    while (cleanPath.startsWith(dupPrefix)) {
+      cleanPath = cleanPath.slice(canvasDir.length + 1)
+    }
+  }
+
+  cleanPath = cleanPath.replace(/^(public\/)+/, "")
   return `${s3Prefix}/${cleanPath}`
 }
 

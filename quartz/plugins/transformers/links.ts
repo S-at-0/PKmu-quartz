@@ -159,6 +159,23 @@ export const CrawlLinks: QuartzTransformerPlugin<Partial<Options>> = (userOpts) 
                   node.properties.src = dest
                 }
               }
+
+              // transform canvas embed paths
+              if (node.properties) {
+                const classes = node.properties.className as string[] | undefined
+                if (classes?.includes("canvas-embed")) {
+                  for (const prop of ["data-src", "dataSrc", "data-page", "dataPage"]) {
+                    const val = node.properties[prop]
+                    if (typeof val === "string" && !isAbsoluteUrl(val, { httpOnly: false })) {
+                      node.properties[prop] = transformLink(
+                        file.data.slug!,
+                        val as RelativeURL,
+                        transformOptions,
+                      )
+                    }
+                  }
+                }
+              }
             })
 
             file.data.links = [...outgoing]

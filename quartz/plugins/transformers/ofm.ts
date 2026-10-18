@@ -22,7 +22,7 @@ import checkboxScript from "../../components/scripts/checkbox.inline"
 // @ts-ignore
 import mermaidScript from "../../components/scripts/mermaid.inline"
 import mermaidStyle from "../../components/styles/mermaid.inline.scss"
-import { FilePath, joinSegments, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
+import { FilePath, pathToRoot, slugTag, slugifyFilePath } from "../../util/path"
 import { toHast } from "mdast-util-to-hast"
 import { toHtml } from "hast-util-to-html"
 import { capitalize } from "../../util/lang"
@@ -259,11 +259,11 @@ export const ObsidianFlavoredMarkdown: QuartzTransformerPlugin<Partial<Options>>
                       value: `<audio src="${url}" controls></audio>`,
                     }
                   } else if (ext === ".canvas") {
-                    const pageUrl = joinSegments(base, slugifyFilePath(fp as FilePath, true))
-                    const rawUrl = joinSegments(base, slugifyFilePath(fp as FilePath))
+                    const rawUrl = slugifyFilePath(fp as FilePath)
+                    const pageUrl = slugifyFilePath(fp as FilePath, true)
                     return {
                       type: "html",
-                      value: `<div class="canvas-embed" data-src="${rawUrl}" data-page="${pageUrl}">
+                      value: `<div class="canvas-embed" data-src="${rawUrl}" data-page="${pageUrl}" data-slug="${file.data.slug}">
                         <div class="canvas-fallback"><a href="${pageUrl}">View Interactive Canvas: ${path.basename(fp)}</a></div>
                       </div>`,
                     }

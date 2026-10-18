@@ -33,10 +33,27 @@ export const RemoteImages: QuartzTransformerPlugin<Partial<RemoteImagesOptions>>
       return src
     }
 
-    const [cleanSrc, searchOrHash] = src.split(/(?=[?#])/)
+    const [cleanSrcRaw, searchOrHash] = src.split(/(?=[?#])/)
+    const cleanSrc = cleanSrcRaw.replace(/\\/g, "/")
     const fileDir = path.posix.dirname(fileSlug ?? "")
-    const rawResolved = path.posix.resolve("/", fileDir, cleanSrc)
-    const cleanPath = rawResolved.replace(/^\//, "").replace(/^(public\/)+/, "")
+
+    let cleanPath: string
+    if (cleanSrc.startsWith("./") || cleanSrc.startsWith("../")) {
+      cleanPath = path.posix.resolve("/", fileDir, cleanSrc).replace(/^\//, "")
+    } else if (fileDir === "." || fileDir === "" || cleanSrc.startsWith(fileDir + "/")) {
+      cleanPath = cleanSrc.replace(/^\//, "")
+    } else {
+      cleanPath = path.posix.resolve("/", fileDir, cleanSrc).replace(/^\//, "")
+    }
+
+    if (fileDir !== "." && fileDir !== "") {
+      const dupPrefix = `${fileDir}/${fileDir}/`
+      while (cleanPath.startsWith(dupPrefix)) {
+        cleanPath = cleanPath.slice(fileDir.length + 1)
+      }
+    }
+
+    cleanPath = cleanPath.replace(/^(public\/)+/, "")
     const queryOrHash = searchOrHash ?? ""
 
     return `${s3Prefix}/${cleanPath}${queryOrHash}`

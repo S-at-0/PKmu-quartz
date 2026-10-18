@@ -5,8 +5,11 @@ import { QuartzEmitterPlugin } from "../types"
 import spaRouterScript from "../../components/scripts/spa.inline"
 // @ts-ignore
 import popoverScript from "../../components/scripts/popover.inline"
+// @ts-ignore
+import canvasScript from "../../components/scripts/canvas.inline"
 import styles from "../../styles/custom.scss"
 import popoverStyle from "../../components/styles/popover.scss"
+import canvasStyle from "../../components/styles/canvas.inline.scss"
 import { BuildCtx } from "../../util/ctx"
 import { QuartzComponent } from "../../components/types"
 import {
@@ -84,6 +87,10 @@ function addGlobalPageResources(ctx: BuildCtx, componentResources: ComponentReso
     componentResources.afterDOMLoaded.push(popoverScript)
     componentResources.css.push(popoverStyle)
   }
+
+  // canvas
+  componentResources.afterDOMLoaded.push(canvasScript)
+  componentResources.css.push(canvasStyle)
 
   if (cfg.analytics?.provider === "google") {
     const tagId = cfg.analytics.tagId

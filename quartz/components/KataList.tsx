@@ -1,8 +1,11 @@
 import { FullSlug, transformLink, slugifyFilePath, FilePath } from "../util/path"
 import { QuartzComponent, QuartzComponentConstructor, QuartzComponentProps } from "./types"
 import { classNames } from "../util/lang"
+import isAbsoluteUrl from "is-absolute-url"
 
 const wikilinkPattern = /^!?\[\[([^\]|#]+)?(#+[^\]|]+)?(?:\|([^\]]+))?\]\]$/
+// [表示テキスト](URL) 形式のMarkdownリンク
+const mdLinkPattern = /^\[([^\]]*)\]\(([^)]+)\)$/
 
 const KataList: QuartzComponent = ({ fileData, allFiles, displayClass }: QuartzComponentProps) => {
   const kataList = (fileData.frontmatter?.kata ?? fileData.frontmatter?.["カタ"]) as string[] | undefined
@@ -17,12 +20,13 @@ const KataList: QuartzComponent = ({ fileData, allFiles, displayClass }: QuartzC
     <ul class={classNames(displayClass, "kata-list")}>
       {kataList.map((item) => {
         const trimmed = item.trim()
-        const match = wikilinkPattern.exec(trimmed)
 
-        if (match) {
-          const rawTarget = match[1]?.trim() ?? ""
-          const anchor = match[2]?.trim() ?? ""
-          const alias = match[3]?.trim()
+        // --- Wikilink: [[target|alias]] ---
+        const wikilinkMatch = wikilinkPattern.exec(trimmed)
+        if (wikilinkMatch) {
+          const rawTarget = wikilinkMatch[1]?.trim() ?? ""
+          const anchor = wikilinkMatch[2]?.trim() ?? ""
+          const alias = wikilinkMatch[3]?.trim()
 
           const targetSlug = slugifyFilePath(rawTarget as FilePath)
           const href = transformLink(fileData.slug!, targetSlug + anchor, {
@@ -40,6 +44,47 @@ const KataList: QuartzComponent = ({ fileData, allFiles, displayClass }: QuartzC
               </a>
             </li>
           )
+        }
+
+        // --- Markdownリンク: [text](url) ---
+        const mdMatch = mdLinkPattern.exec(trimmed)
+        if (mdMatch) {
+          const displayText = mdMatch[1] || mdMatch[2]
+          const rawHref = mdMatch[2]
+
+          if (isAbsoluteUrl(rawHref, { httpOnly: false })) {
+            // 外部リンク
+            return (
+              <li>
+                <a href={rawHref} class="external kata-badge" target="_blank" rel="noopener noreferrer">
+                  <span class="kata-icon">◇</span>
+                  {displayText}
+                  <svg
+                    aria-hidden="true"
+                    class="external-icon"
+                    style="max-width:0.8em;max-height:0.8em"
+                    viewBox="0 0 512 512"
+                  >
+                    <path d="M320 0H288V64h32 82.7L201.4 265.4 178.7 288 224 333.3l22.6-22.6L448 109.3V192v32h64V192 32 0H480 320zM32 32H0V64 480v32H32 456h32V480 352 320H424v32 96H64V96h96 32V32H160 32z" />
+                  </svg>
+                </a>
+              </li>
+            )
+          } else {
+            // 内部リンク（相対パス）
+            const href = transformLink(fileData.slug!, rawHref as any, {
+              strategy: "shortest",
+              allSlugs,
+            })
+            return (
+              <li>
+                <a href={href} class="internal kata-badge">
+                  <span class="kata-icon">◇</span>
+                  {displayText}
+                </a>
+              </li>
+            )
+          }
         }
 
         // 通常のテキストの場合
